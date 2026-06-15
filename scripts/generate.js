@@ -1,13 +1,33 @@
 const fs=require('fs'),path=require('path'),today=new Date().toISOString().slice(0,10),slug=today;
-const feed=JSON.parse(fs.readFileSync(path.join(__dirname,'..','feed.json'),'utf8'));
-if(feed.posts.find(p=>p.slug===slug)){console.log('Exists');process.exit(0)}
-const articles=[
-{title:'不喜欢社交不是缺陷——给社恐人士的生存指南',tag:'社恐认知',intro:'社恐不是病，是特质。这个世界80%的社交场合是为外向者设计的，你觉得格格不入不是你的问题。学会用自己的方式舒适地活在社会里，而不是强迫自己变成另一个人。',sections:[{title:'🧬 社恐不是\"性格内向\"',body:'内向是\"我可以社交但会累\"，社恐是\"社交让我焦虑到无法正常工作生活\"。社恐的本质是对社交评价的过度恐惧。好消息是：这不是性格无法改变，而是一种可以被管理的焦虑反应。几千年来社恐基因能留存下来是因为——敏感的人更警觉、更不容易被群体排斥、更容易察觉危险。社恐是你的天赋，不是缺陷。'},{title:'📱 Zoom时代是社恐的黄金时代',body:'远程办公、线上会议、外卖、网购、在线聊天——你不需要在物理空间里和很多人打交道就能生活得很好。这不是逃避，是利用工具过自己想要的生活。选不露脸的工作完全可行：程序员、设计师、自由撰稿人、视频剪辑师、在线客服——这些职业看重的是产出而不是社交能力。'},{title:'✅ 该社交的场合，用最小消耗法应对',body:'参加必要社交前：提前想好3个话题备用（最近看什么剧/假期去哪玩/公司附近有什么好吃的）。到了场合就执行计划：微笑+点头+问对方一个问题（把焦点放在对方身上）。社交时间控制在1-2小时，时间到了就离场——有预定的离开时间就不那么焦虑。回家后给自己一份\"社交完成奖励\"。社恐不是避开所有社交，是用最小消耗完成必要的社交。'}]},
-{title:'社恐怎么找工作？这8种职业最适合不喜欢社交的人',tag:'职业选择',intro:'不是所有工作都需要八面玲珑。有些职业就是为喜欢安静专注的人量身定做的。社恐不需要强融自己不擅长的工作类型，选对赛道比强行改变自己重要得多。',sections:[{title:'💻 技术类',body:'程序员/测试员/数据分析师：和代码、数据、系统打交道，沟通主要是文字。大部分时间戴耳机专注工作就好，开会频率低且基本都是线上。需求量巨大，薪资高。不需要什么社交能力，代码写得好就行。'},{title:'🎨 创作类',body:'设计师/视频剪辑师/插画师/自由撰稿人/翻译：一个人+一台电脑就是全部工作环境。接单→做→交稿，大部分沟通通过微信文字完成。接单平台到处都是。不想和客户直接沟通？找代理帮你接单虽然分成但省心。'},{title:'🔧 技术手工类',body:'电工/焊工/木工/钟表修理/宠物美容师：技术要求高但社交要求极低。和物品打交道的比例远高于和人。关键是越来越多人不愿意做这些\"不太体面\"的工作，供需极度不平衡——技术好的师傅收费不低，还能自己做老板。'},{title:'📦 远程/独立工作',body:'电商仓库打包发货、数据标注、线上客服（打字不打电话）、宠物寄养、专业整理收纳师——这些都是可以独立完成的。有些人更适合在自己的节奏里工作，而不是被塞进一个需要随时社交的办公室。找到适合自己的工作模式比进大公司重要得多。'}]},
-{title:'社恐也能拥有社交生活——低强度社交指南',tag:'社交技巧',intro:'社恐需要的不是\"更多社交\"，是\"更高质量的社交\"。一个人的深聊胜过十个表面的寒暄。高质量的社交不是靠数量，是靠匹配度。',sections:[{title:'🎯 找对圈子',body:'社恐找朋友最好的渠道不是酒局和派对的泛泛之交，而是：兴趣社群（读书会/徒步群/桌游群）、线上社区（都有社恐经历的人最理解彼此）、志愿服务（一起做事比纯聊天轻松）。一个有共同爱好的人远比十个酒肉朋友让你舒服。'},{title:'👥 一对一胜过一群人',body:'社恐最怕大的社交场合——不是怕人，是怕太多人同时需要应对。一对一是社恐最舒适的社交深度：约一个朋友喝咖啡/散步比参加聚会轻松十倍。建立几个深度的一对一关系，不要追求\"有很多朋友\"。两个能交心的朋友就够支撑全部的情感需求。'},{title:'💬 文字社交是社恐的舒适区',body:'不擅长面对面聊天？打字完全没有问题。在社群里用文字交流、在游戏中交朋友、写博客/公众号吸引同频的人。文字社交让你有足够的时间思考和表达，不会因为\"说错话\"而焦虑。当你用文字建立初步连接后，见面时就不会那么紧张了——因为你们已经是朋友了。'}]},
+const fp=path.join(__dirname,'..','feed.json');
+const feed=JSON.parse(fs.readFileSync(fp,'utf8'));
+if(!feed.posts)feed.posts=[];
+if(feed.posts.find(p=>p.slug===slug)){console.log('Already exists');process.exit(0)}
+
+// Content pools - 8 groups cycling through dates
+const pools=[
+[{t:'效率翻倍！这3个小技巧让你的工作流更顺畅',tag:'效率技巧',d:'减少切换、批处理、自动化——3个简单技巧立刻提升效率'}],
+[{t:'2026年必备的免费工具推荐',tag:'工具推荐',d:'精心挑选的实用免费工具，日常办公和创作都能用上'}],
+[{t:'为什么你总觉得时间不够用？',tag:'时间管理',d:'不是你不够努力，而是方法需要调整。重新规划你的时间分配'}],
+[{t:'工作学习两不误的小窍门',tag:'学习方法',d:'高效人士都在用的学习方法，每天只需投入少量时间'}],
+[{t:'比勤奋更重要的是方法',tag:'思维方式',d:'换个角度思考问题，可能会发现之前困扰你的事其实很简单'}],
+[{t:'减少决策疲劳的日常习惯',tag:'习惯养成',d:'每天做太多小决定会消耗精力，建立习惯让大脑自动运行'}],
+[{t:'让生活更有条理的整理术',tag:'生活技巧',d:'整理不只是打扫房间，更是整理思绪和提升幸福感的方式'}],
+[{t:'数字时代如何保持专注',tag:'专注力',d:'手机和社交媒体在偷走你的注意力，教你几招夺回主动权'}],
 ];
-const idx=(new Date().getDate()-1)%articles.length,a=articles[idx];
-feed.posts.unshift({slug,date:today,title:a.title,tag:a.tag,intro:a.intro,sections:a.sections});
-feed.updated=today;fs.writeFileSync(path.join(__dirname,'..','feed.json'),JSON.stringify(feed,null,2));
-const html=`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${a.title}</title><meta name="description" content="${a.intro}"><style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}:root{--bg:#fafafa;--card:#fff;--text:#1a1a2e;--t2:#555;--accent:#0891b2;--border:#e5e7eb;--r:12px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);line-height:1.9;font-size:16px}.container{max-width:750px;margin:0 auto;padding:0 20px}header{background:linear-gradient(135deg,#0891b2,#06b6d4);color:#fff;padding:36px 0;margin-bottom:24px}header a{color:rgba(255,255,255,.85);text-decoration:none;font-size:.9rem}header h1{font-size:1.5rem;margin-top:8px;line-height:1.4}.post{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:32px}.post .intro{font-size:1rem;color:var(--t2);margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border);line-height:1.8}.section{margin-bottom:24px}.section h3{font-size:1.05rem;margin-bottom:6px;color:var(--accent)}.section p{color:var(--t2);font-size:.92rem;line-height:1.9}footer{text-align:center;padding:24px;color:#999;font-size:.75rem}@media(max-width:600px){.post{padding:18px}}</style></head><body><header><div class="container"><a href="../index.html">← 首页</a><h1>${a.title}</h1></div></header><main class="container"><article class="post"><p class="intro">${a.intro}</p>${a.sections.map(s=>`<div class="section"><h3>${s.title}</h3><p>${s.body}</p></div>`).join('')}</article></main><footer><p>🌊 社恐生存指南 · 每日更新</p></footer></body></html>`;
-fs.writeFileSync(path.join(__dirname,'..','posts',slug+'.html'),html);console.log('OK');
+
+const idx=(new Date().getDate()-1)%pools.length;
+const pool=pools[idx];
+const titles=['每日分享 | '+today,'实用技巧 | '+today,'效率提升 | '+today,'好物推荐 | '+today];
+const title=titles[new Date().getDate()%titles.length];
+
+feed.posts.unshift({slug,date:today,title:title,items:pool});
+feed.updated=today;
+fs.writeFileSync(fp,JSON.stringify(feed,null,2));
+
+// Create post HTML
+const dir=path.join(__dirname,'..','posts');
+if(!fs.existsSync(dir))fs.mkdirSync(dir,{recursive:true});
+const h=`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${title}</title><meta name="description" content="${pool.map(i=>i.t).join('、')}"><style>body{font:16px -apple-system,sans-serif;background:#fafafa;color:#1a1a2e;line-height:1.8;margin:0;padding:16px}.c{max-width:700px;margin:0 auto}article{background:#fff;padding:24px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}h1{font-size:1.3rem;margin:0 0 4px}.date{font-size:.8rem;color:#666;margin-bottom:20px}.item{margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #eee}.item h2{font-size:1rem;margin:0 0 4px}.item p{font-size:.88rem;color:#555}.tag{display:inline-block;background:#eff6ff;color:#2563eb;font-size:.68rem;padding:2px 8px;border-radius:10px;margin-left:6px}footer{text-align:center;padding:20px;color:#999;font-size:.72rem}</style></head><body><div class="c"><article><h1>${title}</h1><p class="date">📅 ${today}</p>${pool.map(i=>'<div class="item"><h2>'+i.t+' <span class="tag">'+i.tag+'</span></h2><p>'+i.d+'</p></div>').join('')}</article></div><footer>每日自动更新</footer></body></html>`;
+fs.writeFileSync(path.join(dir,slug+'.html'),h);
+console.log('Generated:',title);
